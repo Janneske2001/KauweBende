@@ -1,6 +1,6 @@
 # Interactive Portfolio
 
-A 3D interactive website built with Three.js. Here you can play thr game Kouwe Bende.
+A 3D interactive website built with Three.js. Here you can play the game Kouwe Bende.
 
 ## Features
 
