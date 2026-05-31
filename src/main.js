@@ -3,7 +3,7 @@ import './style.css'
 import { createScene } from './scene/scene.js'
 import { createCamera } from './scene/camera.js'
 import { createRenderer } from './scene/renderer.js'
-import { createControls } from './scene/controls.js'
+// import { createControls } from './scene/controls.js'   // DELETED – no controls
 import { addLights } from './scene/lighting.js'
 
 import { createGrid } from './objects/grid.js'
@@ -22,8 +22,7 @@ const { camera } = createCamera()
 
 // Renderer + Controls
 const renderer = createRenderer(camera)
-const controls = createControls(camera, renderer.domElement)
-window.controls = controls
+// window.controls = controls
 
 // Lights
 addLights(scene)
@@ -34,14 +33,14 @@ createSun(scene)
 const objects = createProjects(scene, projects)
 
 // Interaction
-const interaction = createInteraction(camera, controls, objects)
+const interaction = createInteraction(camera, objects)
 
 // ---------------------------------------------------------------------------------  Animation
 function animate() {
 
   interaction.update(gridTexture)
 
-  controls.update()
+  // controls.update()
   renderer.render(scene, camera)
 
   requestAnimationFrame(animate)

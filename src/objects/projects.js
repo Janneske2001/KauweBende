@@ -17,13 +17,13 @@ export function createProjects(scene, projects) {
 
         console.log("Creating project:", project.title)
 
-        const rowLength = 1
+        const rowLength = 2
         const x = index % rowLength
         const z = Math.floor(index / rowLength)
 
         const posX = (x - rowLength / 2) * xSpacing + (xSpacing / 2)
-        const posZ = 0
-        // const posZ = (z - rowLength / 2) * zSpacing + zSpacing
+        // const posZ = 0
+        const posZ = (z - rowLength / 2) * zSpacing + zSpacing - 1.5
 
         // ============================
         // CREATE PLACEHOLDER CUBE (ALWAYS)

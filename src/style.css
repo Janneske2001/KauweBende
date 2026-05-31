@@ -20,45 +20,7 @@ canvas {
 }
 
 /* ===== PROJECT PANEL – SLIDE FROM BOTTOM ===== */
-#project-panel {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
 
-  max-height: 100vh;
-  overflow-y: auto;
-  background: rgba(12, 12, 24, 0.92);
-  backdrop-filter: blur(16px);
-  color: #ffffff;
-  padding: 200px 30px 100px 30px;
-
-  transform: translateY(100%);
-  transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-}
-
-#project-panel.active {
-  transform: translateY(0);
-}
-
-#project-panel.hidden {
-  display: none;
-}
-
-
-/* Scrollbar styling (optional) */
-#project-panel::-webkit-scrollbar {
-  width: 6px;
-}
-#project-panel::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-}
-#project-panel::-webkit-scrollbar-thumb {
-  background: #C056ED;
-  border-radius: 10px;
-}
 
 /* ===== TYPOGRAPHY ===== */
 #project-title {
@@ -178,33 +140,92 @@ canvas {
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-#project-panel.active .panel-item,
-#project-panel.active .project-dynamic-image,
-#project-panel.active .project-dynamic-text {
+/* ===== QUESTION PANEL – SLIDE FROM BOTTOM ===== */
+#question-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  max-height: 100vh;
+  overflow-y: auto;
+  background: rgba(12, 12, 24, 0.95);
+  backdrop-filter: blur(16px);
+  color: #ffffff;
+  padding: 40px 30px 60px 30px;
+
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+#question-panel.active {
+  transform: translateY(0);
+}
+
+#question-panel.hidden {
+  display: none;
+}
+
+/* Titles and text inside question panel */
+#question-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #db88ff, #9418ca);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  border-left: 4px solid #C056ED;
+  padding-left: 18px;
+}
+
+#question-text {
+  font-size: 1.4rem;
+  line-height: 1.5;
+  background: rgba(0,0,0,0.4);
+  padding: 24px;
+  border-radius: 24px;
+  margin: 20px 0;
+  text-align: center;
+  color: #f0f0f0;
+}
+
+#close-question-panel {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #C056EDaa;
+  color: #C056ED;
+  padding: 12px 24px;
+  border-radius: 40px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+#close-question-panel:hover {
+  background: rgba(125, 0, 193, 0.196);
+  transform: translateY(-2px);
+}
+
+/* Same fade-in animation for panel items */
+#question-panel .panel-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+#question-panel.active .panel-item {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Staggered delays */
-#project-panel.active .panel-item:nth-child(1) { transition-delay: 0.05s; }
-#project-panel.active .panel-item:nth-child(2) { transition-delay: 0.1s; }
-#project-panel.active .panel-item:nth-child(3) { transition-delay: 0.15s; }
-#project-panel.active .panel-item:nth-child(4) { transition-delay: 0.2s; }
-#project-panel.active .panel-item:nth-child(5) { transition-delay: 0.25s; }
-#project-panel.active .panel-item:nth-child(6) { transition-delay: 0.3s; }
-#project-panel.active .panel-item:nth-child(7) { transition-delay: 0.35s; }
-#project-panel.active .panel-item:nth-child(8) { transition-delay: 0.4s; }
-#project-panel.active .panel-item:nth-child(9) { transition-delay: 0.45s; }
-
-#project-panel.active #project-content > *:nth-child(1) { transition-delay: 0.1s; }
-#project-panel.active #project-content > *:nth-child(2) { transition-delay: 0.2s; }
-#project-panel.active #project-content > *:nth-child(3) { transition-delay: 0.3s; }
-#project-panel.active #project-content > *:nth-child(4) { transition-delay: 0.4s; }
-#project-panel.active #project-content > *:nth-child(5) { transition-delay: 0.5s; }
-#project-panel.active #project-content > *:nth-child(6) { transition-delay: 0.6s; }
-#project-panel.active #project-content > *:nth-child(7) { transition-delay: 0.7s; }
-#project-panel.active #project-content > *:nth-child(8) { transition-delay: 0.8s; }
-#project-panel.active #project-content > *:nth-child(9) { transition-delay: 0.9s; }
+/* Delays */
+#question-panel.active .panel-item:nth-child(1) { transition-delay: 0.05s; }
+#question-panel.active .panel-item:nth-child(2) { transition-delay: 0.15s; }
+#question-panel.active .panel-item:nth-child(3) { transition-delay: 0.25s; }
 
 /* ===== GYRO INDICATOR & BUTTONS ===== */
 #gyro-permission-button,

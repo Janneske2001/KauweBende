@@ -1,81 +1,55 @@
 import * as THREE from 'three'
-import { showProject } from '../ui/projectPanel.js'
+// Remove the old import:
+// import { showProject } from '../ui/projectPanel.js'
 
-export function createInteraction(camera, controls, objects) {
+// Add the new import:
+import { showQuestionPanel, closeQuestionPanel, setQuestionText } from '../ui/questionPanel.js'
+
+export function createInteraction(camera, objects) {
     const raycaster = new THREE.Raycaster()
     const mouse = new THREE.Vector2()
     const clock = new THREE.Clock()
 
     let hoveredObject = null
-    let targetObject = null
-    let selectedObject = null
-    let projectOpen = false
+    let selectedObject = null          // keeps track of clicked object for visual feedback
+    let projectOpen = false             // we keep this false always – no panel
 
-    let cameraTargetPosition = null
-    let controlsTargetPosition = null
-    
-    // Store original camera position and controls target
-    const originalCameraPosition = camera.position.clone()
-    const originalControlsTarget = controls.target.clone()
-    
-    // Gyro/Touch state
+    // Gyro/Touch state (same as before)
     let touchStartTime = 0
     let touchStartPosition = { x: 0, y: 0 }
     let isTouching = false
     let lastTouchPosition = { x: 0, y: 0 }
     
-    // Gyro data with proper ranges
     let gyroRotation = { x: 0, y: 0, z: 0 }
     let gyroSupported = false
     let gyroEnabled = false
     let permissionButton = null
     let initialOrientation = null
     
-    // Check if device has gyro
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     
-    // Handle gyro data with correct mapping
+    // ---------- Gyro helper functions (unchanged) ----------
     function handleGyro(event) {
-        if (!gyroEnabled || projectOpen) return
-        
-        // Get device orientation
-        let beta = event.beta || 0    // Front-back tilt: -180 to 180
-        let gamma = event.gamma || 0  // Left-right tilt: -90 to 90
-        let alpha = event.alpha || 0  // Compass direction: 0-360
-        
-        // Store initial orientation to calibrate
+        if (!gyroEnabled) return   // no projectOpen check needed anymore
+        let beta = event.beta || 0
+        let gamma = event.gamma || 0
+        let alpha = event.alpha || 0
         if (initialOrientation === null) {
             initialOrientation = { beta, gamma, alpha }
         }
-        
-        // Calculate relative tilt from initial position
         let relativeBeta = beta - (initialOrientation.beta || 0)
         let relativeGamma = gamma - (initialOrientation.gamma || 0)
-        
-        // Clamp and normalize for smoother rotation
-        const maxTilt = 45 // Maximum tilt angle in degrees
-        
-        // Beta controls X rotation (front/back tilt)
+        const maxTilt = 45
         let targetRotX = Math.max(-maxTilt, Math.min(maxTilt, relativeBeta)) / maxTilt
-        
-        // Gamma controls Y rotation (left/right tilt)
         let targetRotY = Math.max(-maxTilt, Math.min(maxTilt, relativeGamma)) / maxTilt
-        
-        // INVERTED: Tilt forward makes cubes go up, tilt back makes cubes go down
-        targetRotX = -targetRotX // No inversion needed - direct mapping feels natural
+        targetRotX = -targetRotX
         targetRotY = targetRotY
-        
-        // Apply smoothing
         gyroRotation.x += (targetRotX * 0.8 - gyroRotation.x) * 0.15
         gyroRotation.y += (targetRotY * 0.8 - gyroRotation.y) * 0.15
     }
     
-    // Create permission button
     function createPermissionButton() {
-        if (permissionButton) {
-            permissionButton.remove()
-        }
-        
+        if (permissionButton) permissionButton.remove()
         permissionButton = document.createElement('button')
         permissionButton.id = 'gyro-permission-button'
         permissionButton.textContent = '🎮 Enable Gyro'
@@ -95,17 +69,12 @@ export function createInteraction(camera, controls, objects) {
         permissionButton.style.pointerEvents = 'auto'
         permissionButton.style.backdropFilter = 'blur(5px)'
         permissionButton.style.border = '1px solid rgba(157, 0, 255, 0.3)'
-        
         document.body.appendChild(permissionButton)
         return permissionButton
     }
     
-    // Calibrate gyro to current position
     function calibrateGyro() {
         initialOrientation = null
-        console.log('Gyro calibrated')
-        
-        // Show calibration feedback
         const indicator = document.getElementById('gyro-indicator')
         if (indicator) {
             const originalText = indicator.textContent
@@ -120,9 +89,7 @@ export function createInteraction(camera, controls, objects) {
         }
     }
     
-    // Create control panel with indicator and calibrate button
     function createGyroControlPanel() {
-        // Create container
         const panel = document.createElement('div')
         panel.id = 'gyro-panel'
         panel.style.position = 'fixed'
@@ -135,8 +102,6 @@ export function createInteraction(camera, controls, objects) {
         panel.style.gap = '8px'
         panel.style.pointerEvents = 'none'
         
-        
-        // Create calibrate button
         const calibrateBtn = document.createElement('button')
         calibrateBtn.id = 'gyro-calibrate'
         calibrateBtn.textContent = '🎯 Calibrate'
@@ -151,13 +116,11 @@ export function createInteraction(camera, controls, objects) {
         calibrateBtn.style.backdropFilter = 'blur(5px)'
         calibrateBtn.style.pointerEvents = 'auto'
         calibrateBtn.style.transition = 'all 0.2s'
-        
         calibrateBtn.onclick = (e) => {
             e.stopPropagation()
             calibrateGyro()
         }
 
-        // Create indicator
         const indicator = document.createElement('div')
         indicator.id = 'gyro-indicator'
         indicator.textContent = '🎮 Gyro Enabled'
@@ -173,21 +136,16 @@ export function createInteraction(camera, controls, objects) {
         indicator.style.whiteSpace = 'nowrap'
         indicator.style.transition = 'all 0.2s'
         
-        
         panel.appendChild(calibrateBtn)
         panel.appendChild(indicator)
         document.body.appendChild(panel)
-        
         return { indicator, calibrateBtn }
     }
     
-    // Request gyro permission
     async function requestGyroPermission() {
         if (!isMobile) return
-        
         if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
             const button = createPermissionButton()
-            
             button.onclick = async (e) => {
                 e.stopPropagation()
                 try {
@@ -199,14 +157,11 @@ export function createInteraction(camera, controls, objects) {
                         button.remove()
                         createGyroControlPanel()
                         showGyroIndicator(true)
-                        console.log('Gyro enabled on iOS')
                     }
                 } catch (error) {
                     console.error('Gyro permission denied:', error)
                     button.textContent = '❌ Gyro Blocked'
-                    setTimeout(() => {
-                        button.remove()
-                    }, 2000)
+                    setTimeout(() => button.remove(), 2000)
                 }
             }
         } else if ('DeviceOrientationEvent' in window) {
@@ -215,15 +170,12 @@ export function createInteraction(camera, controls, objects) {
             gyroEnabled = true
             createGyroControlPanel()
             showGyroIndicator(true)
-            console.log('Gyro enabled on Android')
         } else {
-            console.log('Gyro not supported')
             createGyroControlPanel()
             showGyroIndicator(false)
         }
     }
     
-    // Show gyro indicator
     function showGyroIndicator(enabled) {
         const indicator = document.getElementById('gyro-indicator')
         if (indicator) {
@@ -236,8 +188,8 @@ export function createInteraction(camera, controls, objects) {
             }
         }
     }
-    
-    // Helper function to get normalized device coordinates
+    // ---------- End of gyro helpers ----------
+
     function getNormalizedCoordinates(clientX, clientY) {
         return {
             x: (clientX / window.innerWidth) * 2 - 1,
@@ -245,7 +197,7 @@ export function createInteraction(camera, controls, objects) {
         }
     }
 
-    // Mouse events (desktop)
+    // Mouse events
     window.addEventListener("mousemove", (event) => {
         if (gyroEnabled && isMobile) return
         const coords = getNormalizedCoordinates(event.clientX, event.clientY)
@@ -253,19 +205,17 @@ export function createInteraction(camera, controls, objects) {
         mouse.y = coords.y
     })
 
-    // Touch events (mobile)
+    // Touch events
     window.addEventListener("touchstart", (event) => {
         if (event.target.id === 'gyro-permission-button') return
         if (event.target.id === 'gyro-calibrate') return
         
         const touch = event.touches[0]
         const coords = getNormalizedCoordinates(touch.clientX, touch.clientY)
-        
         touchStartTime = Date.now()
         touchStartPosition = { x: coords.x, y: coords.y }
         lastTouchPosition = { x: coords.x, y: coords.y }
         isTouching = true
-        
         mouse.x = coords.x
         mouse.y = coords.y
     })
@@ -273,10 +223,8 @@ export function createInteraction(camera, controls, objects) {
     window.addEventListener("touchmove", (event) => {
         if (event.target.id === 'gyro-permission-button') return
         if (event.target.id === 'gyro-calibrate') return
-        
         const touch = event.touches[0]
         const coords = getNormalizedCoordinates(touch.clientX, touch.clientY)
-        
         mouse.x = coords.x
         mouse.y = coords.y
         lastTouchPosition = { x: coords.x, y: coords.y }
@@ -291,93 +239,52 @@ export function createInteraction(camera, controls, objects) {
             lastTouchPosition.x - touchStartPosition.x,
             lastTouchPosition.y - touchStartPosition.y
         )
-        
-        if (touchDuration < 300 && touchDistance < 0.1 && !projectOpen) {
-            setTimeout(() => {
-                handleProjectClick()
-            }, 10)
+        // Short tap without much movement triggers click
+        if (touchDuration < 300 && touchDistance < 0.1) {
+            setTimeout(() => handleObjectClick(), 10)
         }
-        
         isTouching = false
     })
 
-    // Click Event (desktop)
+    // Click event (desktop)
     window.addEventListener("click", (event) => {
         if (event.target.id === 'gyro-permission-button') return
         if (event.target.id === 'gyro-calibrate') return
-        
-        if (!projectOpen) {
-            handleProjectClick()
-        }
+        handleObjectClick()
     })
 
-    function handleProjectClick() {
-        if (projectOpen) return
+    // ----- Core click handler: logs the object's ID -----
+    function handleObjectClick() {
+        if (!hoveredObject) return
 
-        if (hoveredObject) {
-
-            let obj = hoveredObject
-
-            // Traverse up until we find the parent with project data
-            while (obj && !obj.userData.project) {
-                obj = obj.parent
-            }
-
-            if (!obj) return
-
-            console.log("Opening project:", obj.userData.project.title)
-
-            targetObject = obj
-            selectedObject = obj
-
-            selectedObject.userData.targetScale = 1.5
-
-            cameraTargetPosition = new THREE.Vector3(
-                obj.position.x,
-                obj.position.y + 3.5,
-                obj.position.z + 0.4
-            )
-
-            controlsTargetPosition = obj.position.clone()
-
-            projectOpen = true
-            showProject(obj.userData.project)
+        let obj = hoveredObject
+        while (obj && !obj.userData.project) {
+            obj = obj.parent
         }
-    }
+        if (!obj) return
 
-    function resetCameraPosition() {
-        cameraTargetPosition = originalCameraPosition.clone()
-        controlsTargetPosition = originalControlsTarget.clone()
-        
-        if (selectedObject) {
+        const project = obj.userData.project
+        console.log("Clicked object ID:", project.id)
+
+        // Visual feedback: scale up then back
+        if (selectedObject && selectedObject !== obj) {
             selectedObject.userData.targetScale = 1
-            selectedObject = null
         }
-        
-        targetObject = null
-    }
+        selectedObject = obj
+        selectedObject.userData.targetScale = 1.5
+        setTimeout(() => {
+            if (selectedObject === obj) {
+                obj.userData.targetScale = 1
+                selectedObject = null
+            }
+        }, 300)
 
-    // Add close button listener
-    const closeButton = document.getElementById("close-project")
-    if (closeButton) {
-        closeButton.addEventListener("click", (e) => {
-            e.stopPropagation()
-            import('../ui/projectPanel.js').then(module => {
-                module.closeProject()
-                resetCameraPosition()
-                projectOpen = false
-            })
-        })
-        
-        closeButton.addEventListener("touchstart", (e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            import('../ui/projectPanel.js').then(module => {
-                module.closeProject()
-                resetCameraPosition()
-                projectOpen = false
-            })
-        })
+        // Show the question panel with the category title
+        showQuestionPanel(project.title)   // e.g., "Category: Positive"
+
+        // TODO later: load a random question from a data file
+        // Example: fetch(`/data/questions/${project.id}.json`) or from a global object
+        // then call setQuestionText(randomQuestion)
     }
 
     // Initialize gyro on mobile
@@ -387,21 +294,40 @@ export function createInteraction(camera, controls, objects) {
         }, 500)
     }
 
+    // Close panel when clicking the close button
+    const closeBtn = document.getElementById("close-question-panel")
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+            closeQuestionPanel()
+        })
+        closeBtn.addEventListener("touchstart", (e) => {
+            e.preventDefault()
+            closeQuestionPanel()
+        })
+    }
+
     function update(gridTexture) {
-        // Update raycasting for hover detection
+        // ----- Hover detection (same as original) -----
         if (!gyroEnabled || isTouching || !isMobile) {
             raycaster.setFromCamera(mouse, camera)
-            const intersects = raycaster.intersectObjects(objects)
+            const intersects = raycaster.intersectObjects(objects, true) // traverse children
             
             if (intersects.length > 0) {
-                const object = intersects[0].object
-                if (hoveredObject !== object) {
+                let hit = intersects[0].object
+                // Find the root object (the one in `objects` array)
+                let root = hit
+                while (root && !objects.includes(root)) {
+                    root = root.parent
+                }
+                if (!root) root = hit
+
+                if (hoveredObject !== root) {
                     if (hoveredObject && hoveredObject !== selectedObject) {
                         hoveredObject.userData.targetScale = 1
                     }
-                    hoveredObject = object
-                    if (object !== selectedObject) {
-                        object.userData.targetScale = 1.5
+                    hoveredObject = root
+                    if (root !== selectedObject) {
+                        root.userData.targetScale = 1.5
                     }
                 }
             } else {
@@ -415,14 +341,14 @@ export function createInteraction(camera, controls, objects) {
         // Smooth scaling
         const lerpFactor = 0.2
         objects.forEach(object => {
-            const target = object.userData.targetScale
+            const target = object.userData.targetScale || 1
             const scale = object.scale
             scale.x += (target - scale.x) * lerpFactor
             scale.y += (target - scale.y) * lerpFactor
             scale.z += (target - scale.z) * lerpFactor
         })
 
-        // Bounce Animation
+        // Bounce animation (only on non‑selected objects)
         const time = clock.getElapsedTime()
         objects.forEach((object, index) => {
             if (object !== selectedObject) {
@@ -430,20 +356,16 @@ export function createInteraction(camera, controls, objects) {
             }
         })
 
-        // Apply rotation based on input method
+        // Rotation: gyro OR mouse/touch (no camera movement)
         objects.forEach((object) => {
+            const isModel = object.userData.isModel || true
 
-            const isModel = object.userData.isModel
-
-            // ============================
-            // 🌀 AUTO ROTATE MODELS (IDLE ONLY)
-            // ============================
-            if (isModel && object !== selectedObject && !projectOpen) {
+            // Auto‑rotate when idle (no gyro active and object not selected)
+            if (isModel && !(gyroEnabled && isMobile && !isTouching) && object !== selectedObject) {
                 object.rotation.y += 0.01
             }
 
-            if (gyroEnabled && isMobile && !projectOpen && !isTouching) {
-
+            if (gyroEnabled && isMobile && !isTouching) {
                 if (object !== selectedObject) {
                     object.rotation.x = -gyroRotation.x * 0.8
                     object.rotation.y = gyroRotation.y * 0.8
@@ -452,38 +374,20 @@ export function createInteraction(camera, controls, objects) {
                     object.rotation.x = -gyroRotation.x * 0.4
                     object.rotation.y = gyroRotation.y * 0.4
                 }
-
             } else if (!gyroEnabled || !isMobile) {
-
                 const rotationStrength = isTouching ? 0.3 : 0.6
-
                 const vector = object.position.clone()
                 vector.project(camera)
-
                 const dx = mouse.x - vector.x
                 const dy = mouse.y - vector.y
-
                 object.rotation.y += (dx * rotationStrength - object.rotation.y) * 0.1
                 object.rotation.x += (-dy * 0.4 - object.rotation.x) * 0.1
             }
         })
 
-        // Move Grid
+        // Animate grid texture
         if (gridTexture) {
             gridTexture.offset.y += 0.001
-        }
-
-        // Camera movement
-        if (cameraTargetPosition) {
-            camera.position.lerp(cameraTargetPosition, 0.1)
-            if (controlsTargetPosition) {
-                controls.target.lerp(controlsTargetPosition, 0.1)
-            }
-            
-            if (camera.position.distanceTo(cameraTargetPosition) < 0.05) {
-                cameraTargetPosition = null
-                controlsTargetPosition = null
-            }
         }
     }
 

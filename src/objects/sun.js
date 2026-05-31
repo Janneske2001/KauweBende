@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-// Vapor Sun
+// PNG Background floating
 export function createSun(scene) {
 
     const sunGeometry = new THREE.PlaneGeometry(10, 5)
@@ -12,7 +12,7 @@ export function createSun(scene) {
     const plane = new THREE.Mesh(sunGeometry, sunMaterial)
 
     plane.position.y = 2.5
-    plane.position.z = -5
+    plane.position.z = -10
 
     scene.add(plane)
 }
