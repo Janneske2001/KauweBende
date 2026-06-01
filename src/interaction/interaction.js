@@ -339,7 +339,10 @@ export function createInteraction(camera, objects) {
         const categoryId = getCurrentCategoryId()
         if (categoryId) {
             const newQuestion = await loadRandomQuestion(categoryId)
-            setQuestionText(newQuestion)
+            setQuestionText(newQuestion)// inside the reroll button click event listener
+            const rerollSound = new Audio('/sounds/reroll.mp3')
+            rerollSound.volume = 0.6
+            rerollSound.play()
             markRerollUsed()  // hides the button and prevents further rerolls this session
         }
         }
