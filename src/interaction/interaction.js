@@ -334,16 +334,16 @@ export function createInteraction(camera, objects) {
     const rerollBtn = document.getElementById("reroll-question")
     if (rerollBtn) {
     rerollBtn.addEventListener("click", async () => {
+        // Reroll sound effect
+        const rerollSound = new Audio('/sounds/reroll.mp3')
+        rerollSound.volume = 0.8
+        rerollSound.play()
         // Only reroll if panel is open and reroll hasn't been used yet
         if (isQuestionPanelOpen() && isRerollAvailable()) {
         const categoryId = getCurrentCategoryId()
         if (categoryId) {
             const newQuestion = await loadRandomQuestion(categoryId)
             setQuestionText(newQuestion)// inside the reroll button click event listener
-            // Reroll sound effect
-            const rerollSound = new Audio('/sounds/reroll.mp3')
-            rerollSound.volume = 0.8
-            rerollSound.play()
             markRerollUsed()  // hides the button and prevents further rerolls this session
         }
         }
