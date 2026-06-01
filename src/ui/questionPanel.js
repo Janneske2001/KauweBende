@@ -23,6 +23,9 @@ export function showQuestionPanel(categoryTitle, categoryId) {
     currentCategoryId = categoryId
     rerollUsed = false
 
+    // Play the sound for this category
+    playCategorySound(categoryId)
+
     const titleElem = document.getElementById("question-title")
     if (titleElem) titleElem.textContent = categoryTitle
 
@@ -47,9 +50,6 @@ export function showQuestionPanel(categoryTitle, categoryId) {
     void panel.offsetHeight
     panel.classList.add("active")
     isPanelOpen = true
-
-      // Play the sound for this category
-    playCategorySound(categoryId)
 }
 
 export function closeQuestionPanel() {
