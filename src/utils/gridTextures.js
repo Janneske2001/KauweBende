@@ -14,9 +14,9 @@ export function createGridTexture() {
     ctx.fillRect(0, 0, size, size)
 
     ctx.strokeStyle = "#C056ED"
-    ctx.lineWidth = 3
+    ctx.lineWidth = 2
 
-    const divisions = 3
+    const divisions = 5
     const step = size / divisions
 
     for (let i = 0; i <= divisions; i++) {

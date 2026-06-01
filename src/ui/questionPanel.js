@@ -3,6 +3,22 @@ let isPanelOpen = false
 let currentCategoryId = null
 let rerollUsed = false
 
+// Helper function to play category sound
+function playCategorySound(categoryId) {
+    if (!categoryId) return
+    const soundFile = `/sounds/${categoryId.toLowerCase()}.mp3`
+    try {
+        const audio = new Audio(soundFile)
+        // Optional: adjust volume (0.0 to 1.0)
+        audio.volume = 0.8
+        audio.play().catch(err => {
+        console.warn(`Could not play sound for ${categoryId}:`, err)
+        })
+    } catch (error) {
+        console.warn(`Failed to create Audio element for ${categoryId}:`, error)
+    }
+}
+
 export function showQuestionPanel(categoryTitle, categoryId) {
     currentCategoryId = categoryId
     rerollUsed = false
@@ -11,7 +27,7 @@ export function showQuestionPanel(categoryTitle, categoryId) {
     if (titleElem) titleElem.textContent = categoryTitle
 
     const textElem = document.getElementById("question-text")
-    if (textElem) textElem.textContent = "🤖 Loading question... 🤖"
+    if (textElem) textElem.textContent = "🤖 Vraag is aan het laden... 🤖"
 
     // Apply category-specific class to panel
     const panel = document.getElementById("question-panel")
@@ -31,6 +47,9 @@ export function showQuestionPanel(categoryTitle, categoryId) {
     void panel.offsetHeight
     panel.classList.add("active")
     isPanelOpen = true
+
+      // Play the sound for this category
+    playCategorySound(categoryId)
 }
 
 export function closeQuestionPanel() {
