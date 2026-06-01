@@ -2,7 +2,9 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Segoe UI', 'Monaco', 'Monospace', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif !important;
 }
+
 
 html, body {
   margin: 0;
@@ -12,16 +14,19 @@ html, body {
   overflow: hidden;
   /* Ensure background fills safe areas */
   background-color: #000016;
+  touch-action: pan-x pan-y;
+  -webkit-tap-highlight-color: transparent;
+  font-family: 'Segoe UI', 'Monaco', 'Monospace', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
 }
 
 /* For the canvas, make it cover the full screen including safe areas */
 canvas {
   display: block;
   position: fixed;
-  top: env(safe-area-inset-top);  /* push canvas down by status bar height */
+  top: env(safe-area-inset-top, 0);   /* fallback 0 if variable missing */
   left: 0;
-  width: 100vw;
-  height: calc(100dvh - env(safe-area-inset-top));  /* fill remaining space to bottom */
+  width: 100%;
+  height: calc(100vh - env(safe-area-inset-top, 0));  /* use 100vh, not dvh */
   z-index: 1;
   object-fit: cover;
 }
