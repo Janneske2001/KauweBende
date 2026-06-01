@@ -149,7 +149,7 @@ canvas {
   transform: translate(-50%, -50%) scale(0.95);
   z-index: 1000;
 
-  width: 60%;
+  width: 90%;
   max-width: 400px;
   max-height: 85vh;
   overflow-y: auto;
