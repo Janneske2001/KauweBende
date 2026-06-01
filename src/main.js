@@ -7,7 +7,7 @@ import { createRenderer } from './scene/renderer.js'
 import { addLights } from './scene/lighting.js'
 
 import { createGrid } from './objects/grid.js'
-import { createSun } from './objects/sun.js'
+import { createSun } from './objects/imgbg.js'
 import { createProjects } from './objects/projects.js'
 
 import { createInteraction } from './interaction/interaction.js'

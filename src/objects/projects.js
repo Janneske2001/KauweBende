@@ -7,8 +7,8 @@ export function createProjects(scene, projects) {
     const objects = []
     const geometry = new THREE.BoxGeometry()
 
-    const xSpacing = 3
-    const zSpacing = 3
+    const xSpacing = 4
+    const zSpacing = 5
 
     const textureLoader = new THREE.TextureLoader()
     const modelLoader = new GLTFLoader()
@@ -23,7 +23,7 @@ export function createProjects(scene, projects) {
 
         const posX = (x - rowLength / 2) * xSpacing + (xSpacing / 2)
         // const posZ = 0
-        const posZ = (z - rowLength / 2) * zSpacing + zSpacing - 1.5
+        const posZ = (z - rowLength / 2) * zSpacing + zSpacing - 2.5
 
         // ============================
         // CREATE PLACEHOLDER CUBE (ALWAYS)
@@ -73,7 +73,7 @@ export function createProjects(scene, projects) {
                     scene.add(model)
                     objects.push(model)
 
-                    console.log("✅ Model loaded:", project.title)
+                    console.log("✅ Model loaded:", project.id)
                 },
 
                 undefined,

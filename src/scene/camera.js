@@ -10,7 +10,7 @@ export function createCamera() {
     1000
     )
 
-    const defaultCameraPosition = new THREE.Vector3(0, 7, 1)
+    const defaultCameraPosition = new THREE.Vector3(0, 9, 1)
     const defaultLookTarget = new THREE.Vector3(0, 0, 0)
 
     camera.position.copy(defaultCameraPosition)

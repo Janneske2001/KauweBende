@@ -3,7 +3,7 @@ import * as THREE from 'three'
 // import { showProject } from '../ui/projectPanel.js'
 
 // Add the new import:
-import { showQuestionPanel, closeQuestionPanel, setQuestionText } from '../ui/questionPanel.js'
+import { showQuestionPanel, closeQuestionPanel, setQuestionText, isQuestionPanelOpen } from '../ui/questionPanel.js'
 
 export function createInteraction(camera, objects) {
     const raycaster = new THREE.Raycaster()
@@ -255,18 +255,17 @@ export function createInteraction(camera, objects) {
 
     // ----- Core click handler: logs the object's ID -----
     function handleObjectClick() {
+        if (isQuestionPanelOpen()) return   // 👈 block clicks when panel is open
         if (!hoveredObject) return
 
         let obj = hoveredObject
-        while (obj && !obj.userData.project) {
-            obj = obj.parent
-        }
+        while (obj && !obj.userData.project) obj = obj.parent
         if (!obj) return
 
         const project = obj.userData.project
         console.log("Clicked object ID:", project.id)
 
-        // Visual feedback: scale up then back
+        // Visual feedback
         if (selectedObject && selectedObject !== obj) {
             selectedObject.userData.targetScale = 1
         }
@@ -279,12 +278,38 @@ export function createInteraction(camera, objects) {
             }
         }, 300)
 
-        // Show the question panel with the category title
-        showQuestionPanel(project.title)   // e.g., "Category: Positive"
+        // Open panel with category title
+        showQuestionPanel(project.title)
 
-        // TODO later: load a random question from a data file
-        // Example: fetch(`/data/questions/${project.id}.json`) or from a global object
-        // then call setQuestionText(randomQuestion)
+        // Load random question from JSON file
+        loadRandomQuestion(project.id).then(questionText => {
+            setQuestionText(questionText)
+        })
+    }
+
+    async function loadRandomQuestion(categoryId) {
+    // categoryId e.g. "Positive" -> "positive.json"
+    const fileName = `${categoryId.toLowerCase()}.json`
+    const filePath = `/data/${fileName}`   // ✅ correct for Vite's public folder
+    
+    try {
+        const response = await fetch(filePath)
+        if (!response.ok) {
+            // Log the actual error for debugging
+            console.error(`HTTP ${response.status} - Failed to load ${filePath}`)
+            throw new Error(`HTTP ${response.status}`)
+        }
+        const questions = await response.json()
+        if (!Array.isArray(questions) || questions.length === 0) {
+            
+        }
+        const randomIndex = Math.floor(Math.random() * questions.length)
+        return questions[randomIndex]
+        } catch (error) {
+            console.error("Failed to load questions:", error, "tried path:", filePath)
+            // Return a friendly fallback message
+            return "✨ Could not load question. Please try again later. ✨"
+        }
     }
 
     // Initialize gyro on mobile
@@ -327,7 +352,7 @@ export function createInteraction(camera, objects) {
                     }
                     hoveredObject = root
                     if (root !== selectedObject) {
-                        root.userData.targetScale = 1.5
+                        root.userData.targetScale = 1.2
                     }
                 }
             } else {
