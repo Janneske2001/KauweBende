@@ -336,7 +336,7 @@ export function createInteraction(camera, objects) {
     rerollBtn.addEventListener("click", async () => {
         // Reroll sound effect
         const rerollSound = new Audio('/sounds/reroll.mp3')
-        rerollSound.volume = 0.8
+        rerollSound.volume = 1.0
         rerollSound.play()
         // Only reroll if panel is open and reroll hasn't been used yet
         if (isQuestionPanelOpen() && isRerollAvailable()) {

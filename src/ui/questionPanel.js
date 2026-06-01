@@ -10,7 +10,7 @@ function playCategorySound(categoryId) {
     try {
         const audio = new Audio(soundFile)
         // Optional: adjust volume (0.0 to 1.0)
-        audio.volume = 1.0
+        audio.volume = 0.8
         audio.play().catch(err => {
         console.warn(`Could not play sound for ${categoryId}:`, err)
         })
