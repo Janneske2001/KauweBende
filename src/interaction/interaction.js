@@ -89,7 +89,7 @@ export function createInteraction(camera, objects) {
         const indicator = document.getElementById('gyro-indicator')
         if (indicator) {
             const originalText = indicator.textContent
-            indicator.textContent = '🎯 Calibrated!'
+            indicator.textContent = '🎯 Gecalibreerd!'
             indicator.style.background = 'rgba(0,0,0,0.9)'
             setTimeout(() => {
                 if (gyroEnabled) {
@@ -115,7 +115,7 @@ export function createInteraction(camera, objects) {
         
         const calibrateBtn = document.createElement('button')
         calibrateBtn.id = 'gyro-calibrate'
-        calibrateBtn.textContent = '🎯 Calibrate'
+        calibrateBtn.textContent = '🎯 Calibreren'
         calibrateBtn.style.background = 'rgba(0,0,0,0.8)'
         calibrateBtn.style.color = '#C056ED'
         calibrateBtn.style.border = '1px solid #C056ED'
@@ -134,7 +134,7 @@ export function createInteraction(camera, objects) {
 
         const indicator = document.createElement('div')
         indicator.id = 'gyro-indicator'
-        indicator.textContent = '🎮 Gyro Enabled'
+        indicator.textContent = '🎮 Gyro Aan'
         indicator.style.background = 'rgba(0,0,0,0.8)'
         indicator.style.padding = '6px 12px'
         indicator.style.borderRadius = '20px'
@@ -171,7 +171,7 @@ export function createInteraction(camera, objects) {
                     }
                 } catch (error) {
                     console.error('Gyro permission denied:', error)
-                    button.textContent = '❌ Gyro Blocked'
+                    button.textContent = '❌ Gyro Geweigerd'
                     setTimeout(() => button.remove(), 2000)
                 }
             }
@@ -191,10 +191,10 @@ export function createInteraction(camera, objects) {
         const indicator = document.getElementById('gyro-indicator')
         if (indicator) {
             if (enabled) {
-                indicator.textContent = '🎮 Gyro Enabled'
+                indicator.textContent = '🎮 Gyro Aan'
                 indicator.style.opacity = '1'
             } else {
-                indicator.textContent = '📱 Gyro Not Available'
+                indicator.textContent = '📱 Gyro Niet Beschikbaar'
                 indicator.style.opacity = '0.6'
             }
         }

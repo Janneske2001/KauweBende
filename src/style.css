@@ -191,7 +191,7 @@ canvas {
 
 /* ===== TYPOGRAPHY INSIDE PANEL ===== */
 #question-title {
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: 700;
   margin-bottom: 20px;
   text-align: center;
@@ -202,7 +202,7 @@ canvas {
 }
 
 #question-text {
-  font-size: 1.3rem;
+  font-size: 1.9rem;
   line-height: 1.5;
   background: rgba(0, 0, 0, 0.4);
   padding: 28px 20px;
@@ -221,7 +221,7 @@ canvas {
   padding: 12px 20px;
   margin-top: 12px;
   border-radius: 60px;
-  font-size: 1rem;
+  font-size: 1.5rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
