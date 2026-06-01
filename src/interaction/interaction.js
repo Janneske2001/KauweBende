@@ -34,7 +34,10 @@ export function createInteraction(camera, objects) {
     let permissionButton = null
     let initialOrientation = null
     
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    // Reliable mobile/tablet detection including iPads (which may report as Mac)
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) // iPad on iOS13+
+    || ('ontouchstart' in window) && window.innerWidth <= 1024; // fallback
     
     // ---------- Gyro helper functions (unchanged) ----------
     function handleGyro(event) {
