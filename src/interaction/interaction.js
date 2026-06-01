@@ -3,7 +3,15 @@ import * as THREE from 'three'
 // import { showProject } from '../ui/projectPanel.js'
 
 // Add the new import:
-import { showQuestionPanel, closeQuestionPanel, setQuestionText, isQuestionPanelOpen } from '../ui/questionPanel.js'
+import { 
+    showQuestionPanel, 
+    closeQuestionPanel, 
+    setQuestionText, 
+    isQuestionPanelOpen,
+    getCurrentCategoryId,
+    isRerollAvailable,
+    markRerollUsed
+} from '../ui/questionPanel.js'
 
 export function createInteraction(camera, objects) {
     const raycaster = new THREE.Raycaster()
@@ -278,8 +286,8 @@ export function createInteraction(camera, objects) {
             }
         }, 300)
 
-        // Open panel with category title
-        showQuestionPanel(project.title)
+        // Open panel with category title and category ID (for later reroll)
+        showQuestionPanel(project.title, project.id)
 
         // Load random question from JSON file
         loadRandomQuestion(project.id).then(questionText => {
@@ -317,6 +325,28 @@ export function createInteraction(camera, objects) {
         setTimeout(() => {
             requestGyroPermission()
         }, 500)
+    }
+
+    // Setup reroll button (one-time event listener)
+    const rerollBtn = document.getElementById("reroll-question")
+    if (rerollBtn) {
+    rerollBtn.addEventListener("click", async () => {
+        // Only reroll if panel is open and reroll hasn't been used yet
+        if (isQuestionPanelOpen() && isRerollAvailable()) {
+        const categoryId = getCurrentCategoryId()
+        if (categoryId) {
+            const newQuestion = await loadRandomQuestion(categoryId)
+            setQuestionText(newQuestion)
+            markRerollUsed()  // hides the button and prevents further rerolls this session
+        }
+        }
+    })
+    
+    // Also handle touch for mobile
+    rerollBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault()
+        rerollBtn.click()
+    })
     }
 
     // Close panel when clicking the close button

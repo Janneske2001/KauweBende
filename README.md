@@ -1,6 +1,6 @@
 # Interactive Game Website
 
-A 3D interactive website built with Three.js. Here you can play the game Kouwe Bende.
+A 3D interactive website built with Three.js. Here you can play the game Kauwe Bende.
 
 ## Features
 

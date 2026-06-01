@@ -2,7 +2,7 @@ export const projects = [
 
 {
     id: "Positive",
-    title: "Category: Positive",
+    title: "Categorie: Positive",
     type: "model",
     model: "/models/pos.glb",
     // image: "/images/solder.jpg",        // still used as thumbnail in the 3D scene
@@ -19,7 +19,7 @@ export const projects = [
 
 {
     id: "Future",
-    title: "Category: Future",
+    title: "Categorie: Future",
     type: "model",
     model: "/models/fut.glb",
     // image: "/images/solder.jpg",        // still used as thumbnail in the 3D scene
@@ -36,7 +36,7 @@ export const projects = [
 
 {
     id: "Reflection",
-    title: "Category: Reflection",
+    title: "Categorie: Reflection",
     type: "model",
     model: "/models/ref.glb",
     // image: "/images/solder.jpg",        // still used as thumbnail in the 3D scene
@@ -53,7 +53,7 @@ export const projects = [
 
 {
     id: "Competitive",
-    title: "Category: Competitive",
+    title: "Categorie: Competitive",
     type: "model",
     model: "/models/com.glb",
     // image: "/images/solder.jpg",        // still used as thumbnail in the 3D scene
