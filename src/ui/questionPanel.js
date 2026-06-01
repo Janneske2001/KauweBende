@@ -11,13 +11,22 @@ export function showQuestionPanel(categoryTitle, categoryId) {
     if (titleElem) titleElem.textContent = categoryTitle
 
     const textElem = document.getElementById("question-text")
-    if (textElem) textElem.textContent = "✨ Vraag is aan het laden... ✨"
+    if (textElem) textElem.textContent = "🤖 Loading question... 🤖"
 
-    // Show the reroll button (it will be hidden again after one use)
+    // Apply category-specific class to panel
+    const panel = document.getElementById("question-panel")
+    // Remove any existing category class
+    panel.classList.remove('category-positive', 'category-future', 'category-reflection', 'category-competitive')
+    // Add the new one based on categoryId (lowercase)
+    if (categoryId) {
+        const categoryClass = `category-${categoryId.toLowerCase()}`
+        panel.classList.add(categoryClass)
+    }
+
+    // Show the reroll button
     const rerollBtn = document.getElementById("reroll-question")
     if (rerollBtn) rerollBtn.style.display = "block"
 
-    const panel = document.getElementById("question-panel")
     panel.classList.remove("hidden")
     void panel.offsetHeight
     panel.classList.add("active")
@@ -25,11 +34,13 @@ export function showQuestionPanel(categoryTitle, categoryId) {
 }
 
 export function closeQuestionPanel() {
-    // Reset for next time
     currentCategoryId = null
     rerollUsed = false
 
     const panel = document.getElementById("question-panel")
+    // Remove category classes (optional – they will be replaced when next opened)
+    panel.classList.remove('category-positive', 'category-future', 'category-reflection', 'category-competitive')
+    
     panel.classList.remove("active")
     setTimeout(() => {
         panel.classList.add("hidden")

@@ -319,7 +319,7 @@ export function createInteraction(camera, objects) {
         } catch (error) {
             console.error("Failed to load questions:", error, "tried path:", filePath)
             // Return a friendly fallback message
-            return "✨ Could not load question. Please try again later. ✨"
+            return "🤖 Error 404, vraag niet gevonden. 🤖"
         }
     }
 
