@@ -18,12 +18,10 @@ html, body {
 canvas {
   display: block;
   position: fixed;
-  top: 0;
+  top: env(safe-area-inset-top);  /* push canvas down by status bar height */
   left: 0;
   width: 100vw;
-  height: 100vh;
-  /* Use dvh (dynamic viewport) on iOS for full screen including safe areas */
-  height: 100dvh;
+  height: calc(100dvh - env(safe-area-inset-top));  /* fill remaining space to bottom */
   z-index: 1;
   object-fit: cover;
 }
