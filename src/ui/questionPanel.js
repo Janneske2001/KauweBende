@@ -69,6 +69,7 @@ export function speakQuestion() {
     utterance.lang = 'nl-NL'
     utterance.rate = 0.9
     utterance.pitch = 1.0
+    utterance.volume = 1.0   // 0.0 to 1.0, default is 1.0
 
     const dutchVoice = getDutchVoice()
     if (dutchVoice) utterance.voice = dutchVoice
