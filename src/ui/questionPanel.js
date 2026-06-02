@@ -7,27 +7,6 @@ let rerollUsed = false
 let currentUtterance = null
 let voicesReady = false
 
-// Load voices silently – call this early
-export function primeVoices() {
-    if (!window.speechSynthesis) return
-    // Force voice list loading
-    const voices = window.speechSynthesis.getVoices()
-    if (voices.length) {
-        voicesReady = true
-    } else {
-        window.speechSynthesis.onvoiceschanged = () => {
-        voicesReady = true
-        console.log('Voices ready')
-        }
-    }
-    // Also request permission or prime on iPad
-    try {
-        // This dummy utterance primes the system
-        const dummy = new SpeechSynthesisUtterance(' ')
-        window.speechSynthesis.speak(dummy)
-        window.speechSynthesis.cancel()
-    } catch(e) {}
-}
 
 function getDutchVoice() {
     const voices = window.speechSynthesis.getVoices()
@@ -36,52 +15,43 @@ function getDutchVoice() {
             || voices.find(v => v.lang.startsWith('nl'))
 }
 
+
 export async function speakQuestion() {
-    if (!window.speechSynthesis) return
-    
+    if (!window.speechSynthesis) return;
+
     // Stop any ongoing speech
     if (currentUtterance) {
-        window.speechSynthesis.cancel()
-        currentUtterance = null
+        window.speechSynthesis.cancel();
+        currentUtterance = null;
     }
-    
-    const textElem = document.getElementById("question-text")
-    const questionText = textElem?.innerText
-    if (!questionText || questionText === "✨ Loading question... ✨") return
-    
-    // Ensure voices are ready (wait up to 1 second)
-    if (!voicesReady) {
-        await new Promise((resolve) => {
-        if (window.speechSynthesis.getVoices().length) {
-            voicesReady = true
-            resolve()
-        } else {
-            const timeout = setTimeout(() => resolve(), 1000)
-            window.speechSynthesis.onvoiceschanged = () => {
-            clearTimeout(timeout)
-            voicesReady = true
-            resolve()
-            }
-        }
-        })
-    }
-    
-    const utterance = new SpeechSynthesisUtterance(questionText)
-    utterance.lang = 'nl-NL'
-    utterance.rate = 0.9
-    utterance.pitch = 1.0
-    
-    const dutchVoice = getDutchVoice()
-    if (dutchVoice) utterance.voice = dutchVoice
-    
-    utterance.onend = () => { currentUtterance = null }
-    utterance.onerror = () => { currentUtterance = null }
-    
-    // Small delay to ensure previous cancel is processed
-    setTimeout(() => {
-        window.speechSynthesis.speak(utterance)
-        currentUtterance = utterance
-    }, 50)   
+
+    const textElem = document.getElementById("question-text");
+    const questionText = textElem?.innerText;
+    if (!questionText || questionText === "✨ Loading question... ✨") return;
+
+    // --- Workaround for iOS WebKit bug: Prime with a silent utterance ---
+    const dummyUtterance = new SpeechSynthesisUtterance('');
+    dummyUtterance.volume = 0; // Set volume to 0 so it's silent
+    window.speechSynthesis.speak(dummyUtterance);
+    // ----------------------------------------------------------------
+
+    // Slight delay to let the engine finish initializing
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    // Now create and speak the actual question
+    const utterance = new SpeechSynthesisUtterance(questionText);
+    utterance.lang = 'nl-NL';
+    utterance.rate = 0.9;
+    utterance.pitch = 1.0;
+
+    const dutchVoice = window.speechSynthesis.getVoices().find(v => v.lang === 'nl-NL');
+    if (dutchVoice) utterance.voice = dutchVoice;
+
+    utterance.onend = () => { currentUtterance = null; };
+    utterance.onerror = () => { currentUtterance = null; };
+
+    window.speechSynthesis.speak(utterance);
+    currentUtterance = utterance;
 }
 
 

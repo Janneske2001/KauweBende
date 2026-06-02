@@ -14,8 +14,6 @@ import { createInteraction } from './interaction/interaction.js'
 
 import { projects } from './data/projectList.js'
 
-// Import the TTS priming function
-import { primeVoices } from './ui/questionPanel.js'
 
 // Scene
 const scene = createScene()
@@ -38,8 +36,6 @@ const objects = createProjects(scene, projects)
 // Interaction
 const interaction = createInteraction(camera, objects)
 
-// ---------- Prime text-to-speech voices (works on iPad) ----------
-primeVoices()
 
 
 // ---------------------------------------------------------------------------------  Animation
