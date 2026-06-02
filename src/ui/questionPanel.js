@@ -3,6 +3,53 @@ let isPanelOpen = false
 let currentCategoryId = null
 let rerollUsed = false
 
+let currentUtterance = null
+
+export function speakQuestion() {
+    if (!window.speechSynthesis) {
+        console.warn("Text-to-speech not supported")
+        return
+    }
+    // Stop any ongoing speech
+    if (currentUtterance) {
+        window.speechSynthesis.cancel()
+        currentUtterance = null
+    }
+    const questionText = document.getElementById("question-text")?.innerText
+    if (!questionText || questionText === "✨ Loading question... ✨") return
+    
+    const utterance = new SpeechSynthesisUtterance(questionText)
+    utterance.lang = 'nl-NL'  // Dutch (Netherlands) – adjust if needed
+    utterance.rate = 0.9      // Slightly slower for clarity
+    utterance.pitch = 1.0
+    // Try to pick a female voice if available
+    window.speechSynthesis.onvoiceschanged = () => {
+        const voices = window.speechSynthesis.getVoices()
+        const preferred = voices.find(voice => voice.lang === 'nl-NL' && voice.name.includes('Female')) 
+                        || voices.find(voice => voice.lang === 'nl-NL')
+        if (preferred) utterance.voice = preferred
+        window.speechSynthesis.speak(utterance)
+    }
+    // If voices already loaded, speak immediately
+    if (window.speechSynthesis.getVoices().length > 0) {
+        const voices = window.speechSynthesis.getVoices()
+        const preferred = voices.find(voice => voice.lang === 'nl-NL' && voice.name.includes('Female')) 
+                        || voices.find(voice => voice.lang === 'nl-NL')
+        if (preferred) utterance.voice = preferred
+        window.speechSynthesis.speak(utterance)
+    } else {
+        window.speechSynthesis.speak(utterance)
+    }
+    currentUtterance = utterance
+}
+
+export function stopSpeaking() {
+    if (window.speechSynthesis) {
+        window.speechSynthesis.cancel()
+        currentUtterance = null
+    }
+}
+
 // Helper function to play category sound
 function playCategorySound(categoryId) {
     if (!categoryId) return
@@ -20,6 +67,8 @@ function playCategorySound(categoryId) {
 }
 
 export function showQuestionPanel(categoryTitle, categoryId) {
+    stopSpeaking()  // Stop any speech from previous panel
+    
     currentCategoryId = categoryId
     rerollUsed = false
 
@@ -53,6 +102,8 @@ export function showQuestionPanel(categoryTitle, categoryId) {
 }
 
 export function closeQuestionPanel() {
+    stopSpeaking()  // Stop any speech from previous panel
+    
     currentCategoryId = null
     rerollUsed = false
 
@@ -70,6 +121,7 @@ export function closeQuestionPanel() {
 export function setQuestionText(text) {
     const textElem = document.getElementById("question-text")
     if (textElem) textElem.textContent = text
+    stopSpeaking()  // Interrupt old speech when question changes
 }
 
 export function isQuestionPanelOpen() {

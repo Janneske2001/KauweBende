@@ -63,7 +63,7 @@ export function createInteraction(camera, objects) {
         if (permissionButton) permissionButton.remove()
         permissionButton = document.createElement('button')
         permissionButton.id = 'gyro-permission-button'
-        permissionButton.textContent = '🎮 Enable Gyro'
+        permissionButton.textContent = '🎮 Gyro Aanzetten'
         permissionButton.style.position = 'fixed'
         permissionButton.style.bottom = '20px'
         permissionButton.style.left = '20px'
@@ -348,6 +348,22 @@ export function createInteraction(camera, objects) {
         }
         }
     })
+
+    const speakBtn = document.getElementById("speak-question")
+    if (speakBtn) {
+    speakBtn.addEventListener("click", () => {
+        if (isQuestionPanelOpen()) {
+        import('../ui/questionPanel.js').then(module => {
+            module.speakQuestion()
+        })
+        }
+    })
+    // For touch devices
+    speakBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault()
+        speakBtn.click()
+    })
+    }
     
     // Also handle touch for mobile
     rerollBtn.addEventListener("touchstart", (e) => {
