@@ -4,13 +4,17 @@ export function showRulesModal() {
     if (!modal) return
     modal.classList.remove('hidden')
     setTimeout(() => modal.classList.add('active'), 10)
+    document.body.classList.add('modal-open')   // disable canvas clicks
 }
 
 export function closeRulesModal() {
     const modal = document.getElementById('rules-modal')
     if (!modal) return
     modal.classList.remove('active')
-    setTimeout(() => modal.classList.add('hidden'), 300)
+    setTimeout(() => {
+        modal.classList.add('hidden')
+        document.body.classList.remove('modal-open')  // re-enable canvas
+    }, 300)
 }
 
 // Populate content – call once on page load

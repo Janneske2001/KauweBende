@@ -71,6 +71,8 @@ canvas {
   justify-content: center;
   opacity: 0;
   visibility: hidden;
+  pointer-events: auto;          /* default, but be explicit */
+  touch-action: pan-y;           /* allow vertical scroll only inside */
   transition: opacity 0.3s ease, visibility 0s 0.3s;
 }
 .rules-modal.active {
@@ -93,6 +95,8 @@ canvas {
   color: white;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;   /* smooth scroll on iOS */
+  overscroll-behavior: contain;       /* prevent scroll chaining to canvas */
 }
 .rules-modal-content::-webkit-scrollbar {
   display: none;
@@ -126,6 +130,11 @@ canvas {
   border-radius: 12px;
   margin: 10px 0;
 }
+
+body.modal-open canvas {
+  pointer-events: none;
+}
+
 
 /* ===== QUESTION PANEL – CENTERED MODAL (unchanged) ===== */
 #question-panel {
