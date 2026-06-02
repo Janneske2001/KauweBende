@@ -14,6 +14,8 @@ import { createInteraction } from './interaction/interaction.js'
 
 import { projects } from './data/projectList.js'
 
+import { initRulesModal, showRulesModal, closeRulesModal } from './ui/rulesModal.js'
+
 
 // Scene
 const scene = createScene()
@@ -33,6 +35,8 @@ const { gridTexture } = createGrid(scene)
 createSun(scene)
 const objects = createProjects(scene, projects)
 
+initRulesModal()
+
 // Interaction
 const interaction = createInteraction(camera, objects)
 
@@ -48,6 +52,31 @@ function animate() {
 
   requestAnimationFrame(animate)
 
+}
+
+const rulesBtn = document.getElementById("rules-button")
+const closeRulesBtn = document.getElementById("close-rules")
+const rulesModal = document.getElementById("rules-modal")
+
+if (rulesBtn) {
+  rulesBtn.addEventListener("click", showRulesModal)
+  rulesBtn.addEventListener("touchstart", (e) => {
+    e.preventDefault()
+    showRulesModal()
+  })
+}
+if (closeRulesBtn) {
+  closeRulesBtn.addEventListener("click", closeRulesModal)
+  closeRulesBtn.addEventListener("touchstart", (e) => {
+    e.preventDefault()
+    closeRulesModal()
+  })
+}
+// Close modal when clicking outside the content
+if (rulesModal) {
+  rulesModal.addEventListener("click", (e) => {
+    if (e.target === rulesModal) closeRulesModal()
+  })
 }
 
 animate()
