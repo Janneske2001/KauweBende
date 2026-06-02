@@ -5,43 +5,87 @@ let rerollUsed = false
 
 let currentUtterance = null
 
-export function speakQuestion() {
-    if (!window.speechSynthesis) {
-        console.warn("Text-to-speech not supported")
-        return
+// TTS State
+let currentUtterance = null
+let voicesReady = false
+
+// Load voices silently – call this early
+export function primeVoices() {
+    if (!window.speechSynthesis) return
+    // Force voice list loading
+    const voices = window.speechSynthesis.getVoices()
+    if (voices.length) {
+        voicesReady = true
+    } else {
+        window.speechSynthesis.onvoiceschanged = () => {
+        voicesReady = true
+        console.log('Voices ready')
+        }
     }
+    // Also request permission or prime on iPad
+    try {
+        // This dummy utterance primes the system
+        const dummy = new SpeechSynthesisUtterance(' ')
+        window.speechSynthesis.speak(dummy)
+        window.speechSynthesis.cancel()
+    } catch(e) {}
+}
+
+function getDutchVoice() {
+    const voices = window.speechSynthesis.getVoices()
+    return voices.find(v => v.lang === 'nl-NL' && v.name.includes('Female')) 
+            || voices.find(v => v.lang === 'nl-NL')
+            || voices.find(v => v.lang.startsWith('nl'))
+}
+
+export async function speakQuestion() {
+    if (!window.speechSynthesis) return
+    
     // Stop any ongoing speech
     if (currentUtterance) {
         window.speechSynthesis.cancel()
         currentUtterance = null
     }
-    const questionText = document.getElementById("question-text")?.innerText
+    
+    const textElem = document.getElementById("question-text")
+    const questionText = textElem?.innerText
     if (!questionText || questionText === "✨ Loading question... ✨") return
     
+    // Ensure voices are ready (wait up to 1 second)
+    if (!voicesReady) {
+        await new Promise((resolve) => {
+        if (window.speechSynthesis.getVoices().length) {
+            voicesReady = true
+            resolve()
+        } else {
+            const timeout = setTimeout(() => resolve(), 1000)
+            window.speechSynthesis.onvoiceschanged = () => {
+            clearTimeout(timeout)
+            voicesReady = true
+            resolve()
+            }
+        }
+        })
+    }
+    
     const utterance = new SpeechSynthesisUtterance(questionText)
-    utterance.lang = 'nl-NL'  // Dutch (Netherlands) – adjust if needed
-    utterance.rate = 0.9      // Slightly slower for clarity
+    utterance.lang = 'nl-NL'
+    utterance.rate = 0.9
     utterance.pitch = 1.0
-    // Try to pick a female voice if available
-    window.speechSynthesis.onvoiceschanged = () => {
-        const voices = window.speechSynthesis.getVoices()
-        const preferred = voices.find(voice => voice.lang === 'nl-NL' && voice.name.includes('Female')) 
-                        || voices.find(voice => voice.lang === 'nl-NL')
-        if (preferred) utterance.voice = preferred
+    
+    const dutchVoice = getDutchVoice()
+    if (dutchVoice) utterance.voice = dutchVoice
+    
+    utterance.onend = () => { currentUtterance = null }
+    utterance.onerror = () => { currentUtterance = null }
+    
+    // Small delay to ensure previous cancel is processed
+    setTimeout(() => {
         window.speechSynthesis.speak(utterance)
-    }
-    // If voices already loaded, speak immediately
-    if (window.speechSynthesis.getVoices().length > 0) {
-        const voices = window.speechSynthesis.getVoices()
-        const preferred = voices.find(voice => voice.lang === 'nl-NL' && voice.name.includes('Female')) 
-                        || voices.find(voice => voice.lang === 'nl-NL')
-        if (preferred) utterance.voice = preferred
-        window.speechSynthesis.speak(utterance)
-    } else {
-        window.speechSynthesis.speak(utterance)
-    }
-    currentUtterance = utterance
+        currentUtterance = utterance
+    }, 50)   
 }
+
 
 export function stopSpeaking() {
     if (window.speechSynthesis) {
