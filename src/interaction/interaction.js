@@ -13,10 +13,6 @@ import {
     markRerollUsed
 } from '../ui/questionPanel.js'
 
-// After your 3D setup, but before any user interaction
-import { primeVoices } from './ui/questionPanel.js'
-primeVoices()
-
 export function createInteraction(camera, objects) {
     const raycaster = new THREE.Raycaster()
     const mouse = new THREE.Vector2()
