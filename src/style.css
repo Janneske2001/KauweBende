@@ -3,8 +3,11 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Segoe UI', 'Monaco', 'Monospace', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif !important;
+  -webkit-touch-callout: none; /* Disable callout (popup menu) on long press */
+  -webkit-user-select: none;   /* Disable text selection on iOS */
+  user-select: none;           /* Standard property */
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight (already present) */
 }
-
 
 html, body {
   margin: 0;
