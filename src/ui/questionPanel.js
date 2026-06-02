@@ -3,8 +3,6 @@ let isPanelOpen = false
 let currentCategoryId = null
 let rerollUsed = false
 
-let currentUtterance = null
-
 // TTS State
 let currentUtterance = null
 let voicesReady = false
