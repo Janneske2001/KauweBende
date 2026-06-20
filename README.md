@@ -17,11 +17,11 @@ A 3D interactive conversation card game built with Three.js. Players click 3D ob
 
 ## Tech Stack
 
-· Three.js – 3D rendering
-· Vite – build tool
-· Vanilla JavaScript (ES modules)
-· Web Speech API – TTS
-· PWA with service worker
+- Three.js – 3D rendering
+- Vite – build tool
+- Vanilla JavaScript (ES modules)
+- Web Speech API – TTS
+- PWA with service worker
 
 ---
 
